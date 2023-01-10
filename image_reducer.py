@@ -16,9 +16,6 @@ flags.DEFINE_integer(
 flags.DEFINE_string("append_to_name", "",
                     "Some string to append to filename after compression which includes underscore before appended.")
 flags.DEFINE_bool("webp", False, "Convert to web efficient WEBP format.")
-flags.DEFINE_bool(
-    "dry_run", False, "Generate report but do not save converted images. Original" +
-    "images will not be altered")
 
 
 def main(_):
@@ -26,7 +23,6 @@ def main(_):
     quality: int = FLAGS.quality
     append: str = FLAGS.append_to_name
     convert_format: bool = FLAGS.webp
-    dry_run: bool = FLAGS.dry_run
 
     original_total: int = 0
     post_process_total: int = 0
@@ -35,11 +31,11 @@ def main(_):
         for dir, _, files in os.walk(input_path):
             for file in files:
                 original_total, post_process_total = compress_image(
-                    os.path.join(dir, file), quality, append, convert_format, dry_run)
+                    os.path.join(dir, file), quality, append, convert_format)
 
     else:
         image_original_size, image_post_size = compress_image(
-            input_path, quality, append, convert_format, dry_run)
+            input_path, quality, append, convert_format)
 
         original_total += image_original_size
         post_process_total += image_post_size
@@ -52,7 +48,7 @@ def main(_):
 
 
 def compress_image(image_path: str, compression_level: int,
-                   append_name: str, convert_format: bool = False, dry_run: bool = False) -> tuple[int, int]:
+                   append_name: str, convert_format: bool = False) -> tuple[int, int]:
     """Input one image path to compress.
 
     Args:
@@ -74,16 +70,15 @@ def compress_image(image_path: str, compression_level: int,
         os.path.dirname(image_abs_path),
         os.path.splitext(basename)[0] + append)
 
-    if not dry_run:
-        if convert_format:
-            save_path += ".webp"
-            image_file.save(save_path, "webp", quality=compression_level)
-        else:
-            save_path += os.path.splitext(basename)[1]
-            image_file.save(save_path, quality=compression_level)
+    if convert_format:
+        save_path += ".webp"
+        image_file.save(save_path, "webp", quality=compression_level)
+    else:
+        save_path += os.path.splitext(basename)[1]
+        image_file.save(save_path, quality=compression_level)
 
-        logging.info("Saved to %s", save_path)
-        logging.info("W: %s H: %s", image_file.width, image_file.height)
+    logging.info("Saved to %s", save_path)
+    logging.info("W: %s H: %s", image_file.width, image_file.height)
 
     input_size: int = os.path.getsize(image_abs_path)
     result_size: int = os.path.getsize(save_path)
