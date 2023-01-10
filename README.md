@@ -33,6 +33,3 @@
      quality.
 
    - `--webp` Include flag to convert to web efficient WEBP format.
-
-   - `--dry_run` Generate report but do not save converted images. Original
-     images will not be altered.
