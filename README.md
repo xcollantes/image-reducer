@@ -28,7 +28,7 @@
      original.
 
    - `--quality INTEGER` Level of quality for the output image.  Integer between
-   100. By default is 40.  The higher the number, the lower the compression. The
-   lower the number, the higher the compression and lower quality.
+     100. By default is 40.  The higher the number, the lower the compression.
+     The lower the number, the higher the compression and lower quality.
 
    - `--webp` Include flag to convert to web efficient WEBP format.
